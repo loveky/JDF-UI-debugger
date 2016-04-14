@@ -1,0 +1,23 @@
+{
+    "manifest_version": 2,
+    "name": "JDF UI debugger",
+    "short_name": "JDF UI debugger",
+    "version": "0.0.1",
+
+    "description": "debug your JDF UI componments with ease",
+
+    "icons": {
+        "128": "icon128.png"
+    },
+
+    "author": "loveky <ylzcylx@gmail.com>",
+    "homepage_url": "http://jdf.jd.com",
+
+    "devtools_page": "devtoolsBackground.html",
+
+    "background": {
+        "scripts": [ "background.js" ],
+        "persistent": false
+    },
+    "permissions": [ "tabs", "http://*/*", "https://*/*" ]
+}
