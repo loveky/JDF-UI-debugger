@@ -13,10 +13,10 @@
     "author": "loveky <ylzcylx@gmail.com>",
     "homepage_url": "http://jdf.jd.com",
 
-    "devtools_page": "devtoolsBackground.html",
+    "devtools_page": "devtools-background.html",
 
     "background": {
-        "scripts": [ "background.js" ],
+        "scripts": [ "build/background.js" ],
         "persistent": false
     },
     "permissions": [ "tabs", "http://*/*", "https://*/*" ]
