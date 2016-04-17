@@ -10,7 +10,7 @@ port.onDisconnect.addListener(handleDisconnect)
 
 window.addEventListener('message', sendMessageToDevtools)
 
-sendMessageToBackend({type: 'init'})
+sendMessageToBackend({event: 'init'})
 
 function sendMessageToBackend (payload) {
   window.postMessage({

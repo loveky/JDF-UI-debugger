@@ -1,24 +1,22 @@
-function sendToDevtools (data) {
-	window.postMessage({
-		source: 'backend',
-		payload: data
-	}, '*')
-}
+import Bridge from './bridge.js';
 
-window.addEventListener('message', (event) => {
-	if (event.data.source === 'proxy' && event.data.payload) {
-		console.log('backend received message: ' + event.data.payload);
-		handleDevtoolsRequest(event.data.payload);
-	}
-})
+const bridge = new Bridge({
+	send: (data) => {
+		window.postMessage({
+			source: 'backend',
+			payload: data
+		}, '*');
+	},
 
-function handleDevtoolsRequest (request) {
-	if (request.type == 'init') {
-		sendToDevtools({
-			type:'info',
-			data: {
-				switchable: $('*').length
+	listen: (fn) => {
+		window.addEventListener('message', (event) => {
+			if (event.data.source === 'proxy' && event.data.payload) {
+				fn(event.data.payload);
 			}
-		})
+		})		
 	}
-}
+});
+
+bridge.on('init', () => {
+	bridge.send('info', {switchable: $('*').length});
+});

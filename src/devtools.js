@@ -1,3 +1,6 @@
+import Bridge from './bridge.js';
+import { initDevtoolsApp } from './devtoolsApp.js';
+
 // 向页面插入backend.js用来操作页面JDF UI组件
 injectScript(chrome.runtime.getURL('build/backend.js'), () => {
     // 向background.js建立请求
@@ -5,17 +8,15 @@ injectScript(chrome.runtime.getURL('build/backend.js'), () => {
         name: '' + chrome.devtools.inspectedWindow.tabId
     });
 
-    let disconnected = false
-    port.onDisconnect.addListener(() => {
-        disconnected = true
-    })
-
-
-    port.onMessage.addListener((data) => {
-        if (data.type == 'info') {
-            $('#switchable').html(data.data.switchable);
+    const bridge = new Bridge({
+        listen: (fn) => {
+            port.onMessage.addListener(fn);
+        },
+        send: (data) => {
+            port.postMessage(data);
         }
     });
+    initDevtoolsApp(bridge);
 })
 
 
