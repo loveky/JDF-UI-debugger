@@ -7,7 +7,10 @@
     "description": "debug your JDF UI componments with ease",
 
     "icons": {
-        "128": "icon128.png"
+        "32": "icons/icon32.png",
+        "64": "icons/icon64.png",
+        "128": "icons/icon128.png",
+        "256": "icons/icon256.png"
     },
     "web_accessible_resources": [
         "build/backend.js"
