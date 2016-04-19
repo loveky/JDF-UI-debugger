@@ -1,3 +1,39 @@
-h1 {
-	color: red;
+* {
+	margin: 0;
+	padding: 0;
+	font-family: 'microsoft yahei'
+}
+
+.ui-instance {
+	display: inline-block;
+	width: 180px;
+	height: 60px;
+	border: 2px solid green;
+	padding: 0 10px;
+	position: relative;
+	margin: 0 20px 20px 0;
+}
+
+h2.selector {
+	font-size: 15px;
+	color: green;
+	width: 180px;
+	overflow: hidden;
+}
+
+.operations {
+	width: 180px;
+	position: absolute;
+	bottom: 0;
+	text-align: right;
+}
+
+.operations a {
+	text-decoration: none;
+	color: gray;
+	font-size: 12px;
+}
+
+.ui-instance.hover {
+	background: #EEE;
 }
