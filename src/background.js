@@ -43,22 +43,24 @@ function installProxy (tabId) {
 function doublePipe (id, devtools, backend) {
 	devtools.onMessage.addListener(forwardToBackend)
 	function forwardToBackend (message) {
+		console.log('devtools --> backend : ');
+		console.log(message);
 		if (message.event === 'log') {
 			return;
 		}
 		backend.postMessage(message);
 
-		console.log('devtools --> backend : ' + message);
 	}
 
 	backend.onMessage.addListener(forwardToDevtools)
 	function forwardToDevtools (message) {
+		console.log('backend --> devtools : ');
+		console.log(message);
 		if (message.event === 'log') {
 			return;
 		}
 		devtools.postMessage(message)
 
-		console.log('backend --> devtools : ' + message);
 	}
 
 	function shutdown () {

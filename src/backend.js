@@ -22,20 +22,27 @@ bridge.on('init', () => {
 });
 
 bridge.on('focus', (data) => {
-	var ele = getElement(data.type, data.expando);
-	$('html, body').animate({
-	    scrollTop: ele.offset().top -20
-	});
-})
+	var ele = getElement(data.type, data.guid);
+	if (ele.is(":visible")) {	
+		$('html, body').stop().animate({
+		    scrollTop: ele.offset().top -100
+		},200);
+	}
+});
+
+bridge.on('updateOptions', (data) => {
+	var instance = getInstance(data.type, data.guid);
+	var options = $.extend({}, instance.cache('options'), data.newOptions);
+	instance.init(options);
+});
 
 // Helper
-const expando = jQuery.expando;
 function gatherComponments () {
 	var tabs = [];
 
 	for (let tab of $.ui.all().tab) {
 		tabs.push({
-			expando: tab.el[0][expando],
+			guid: tab.guid,
 			options: cloneOptions(tab.cache('options')),
 			selector: tab.el.selector
 		})
@@ -55,11 +62,18 @@ function cloneOptions (options) {
 	return result;
 }
 
-function getElement (type, expandoValue) {
+function getInstance (type, guid) {
 	for (let instance of $.ui.all()[type]) {
-		if (instance.el[0][expando] == expandoValue) {
-			return instance.el;
+		if (instance.guid == guid) {
+			return instance;
 		}
+	}
+}
+
+function getElement (type, guid) {
+	var instance = getInstance (type, guid);
+	if (instance) {
+		return instance.el;
 	}
 }
 

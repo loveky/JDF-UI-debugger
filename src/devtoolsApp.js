@@ -1,24 +1,40 @@
-let UI_INSTANCE_TEMPLATE = '{for instance in list}'
-							+'<div data-expando="${instance.expando}" class="ui-instance">'
+const UI_INSTANCE_TEMPLATE = '{for instance in list}'
+							+'<div data-guid="${instance.guid}" class="ui-instance">'
 							+'	<h2 class="selector">${instance.selector}</h2>'
 							+'	<div class="operations">'
-							+'		<a data-expando="${instance.expando}" class="inspect" href="#">审查元素</a>'
-							+'		<a data-expando="${instance.expando}" class="debug" href="#">调试参数</a>'
+							+'		<a data-guid="${instance.guid}" class="inspect" href="#">审查元素</a>'
+							+'		<a data-guid="${instance.guid}" class="debug" href="#">调试参数</a>'
 							+'	</div>'
 							+'</div>'
 							+'{/for}'
 
-export function initDevtoolsApp (bridge) {
+const OPTIONS_TEMPLATE =   '{for option in options}'
+						+'<div class="option">'
+						+'	<span title="${option_index}" class="option-name">${option_index}</span>'
+						+'	<input name="${option_index}" value="${option}" type="text"/>'
+						+'</div>'
+						+'{/for}';
+
+const optionsCache = {};
+
+let bridge;
+
+export function initDevtoolsApp (_bridge) {
+	bridge = _bridge;
+
 	bridge.on('info', function (payload) {
-       $('body').html(UI_INSTANCE_TEMPLATE.process({list:payload}));
+		$('.ui-instance-list').html(UI_INSTANCE_TEMPLATE.process({list:payload}));
+		for (let instance of payload) {
+			optionsCache[instance.guid] = instance;
+		}
 	});
 	
 	$('body').on('mouseenter', '.ui-instance', function () {
 		$(this).addClass('hover');
 		bridge.send('focus', {
 			type: 'tab',
-			expando: $(this).data('expando')
-		})
+			guid: $(this).data('guid')
+		});
 	});
 
 	$('body').on('mouseleave', '.ui-instance', function () {
@@ -26,10 +42,47 @@ export function initDevtoolsApp (bridge) {
 	});
 	
 	$('body').on('click', '.inspect', function () {
-		chrome.devtools.inspectedWindow.eval('inspect(getElement("tab", ' + $(this).data('expando') + ')[0])');
-	})
+		chrome.devtools.inspectedWindow.eval('inspect(getElement("tab", ' + $(this).data('guid') + ')[0])');
+	});
 
+	$('body').on('click', '.debug', function () {
+		edit(optionsCache[$(this).data('guid')]);
+	});
 }
 
+// helper
+$('#cancel').on('click', closeEditor);
+$('#submit').on('click', updateInstanceConfig)
 
+function closeEditor() {
+	$('#backdrop').hide();
+	$('#options-editor').hide();
+}
 
+function edit (instance) {
+	$('#options-editor').data('guid', instance.guid);
+	$('#options-editor .options').html(OPTIONS_TEMPLATE.process({options: instance.options}));
+	$('#backdrop').show();
+	$('#options-editor').show();
+}
+
+function updateInstanceConfig () {
+	var newOptions = {};
+	$('#options-editor .options input').each(function () {
+		var name = $(this).attr('name');
+
+		if (name.match(/^(is|has)/)) {
+			newOptions[name] = ($(this).val() == 'true');
+		}
+		else {
+			newOptions[name] = $(this).val();
+		}
+
+	});
+
+	bridge.send('updateOptions', {
+		type: 'tab',
+		guid: $('#options-editor').data('guid'),
+		newOptions: newOptions
+	})
+}
