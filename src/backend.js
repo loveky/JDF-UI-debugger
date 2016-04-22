@@ -23,7 +23,9 @@ bridge.on('init', () => {
 
 bridge.on('focus', (data) => {
 	var ele = getElement(data.type, data.guid);
-	if (ele.is(":visible")) {	
+	if (ele.is(":visible")) {
+		$('.JDFUIDEBUGGERblinker').removeClass('JDFUIDEBUGGERblinker');
+		ele.addClass('JDFUIDEBUGGERblinker');	
 		$('html, body').stop().animate({
 		    scrollTop: ele.offset().top -100
 		},200);
@@ -77,4 +79,11 @@ function getElement (type, guid) {
 	}
 }
 
-window.getElement = getElement;
+window.JDFUIDEBUGGERgetElement = getElement;
+
+// 添加专用样式到页面
+var style = document.createElement('style');
+style.type = 'text/css';
+style.innerHTML = '.JDFUIDEBUGGERblinker {animation: JDFUIDEBUGGERblinker 1s linear 2; } @keyframes JDFUIDEBUGGERblinker {50% { opacity: 0.0; } }';
+document.getElementsByTagName('head')[0].appendChild(style);
+

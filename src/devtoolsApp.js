@@ -8,10 +8,14 @@ const UI_INSTANCE_TEMPLATE = '{for instance in list}'
 							+'</div>'
 							+'{/for}'
 
-const OPTIONS_TEMPLATE =   '{for option in options}'
+const OPTIONS_TEMPLATE = '{for option in options}'
 						+'<div class="option">'
 						+'	<span title="${option_index}" class="option-name">${option_index}</span>'
+						+'  {if option_index.indexOf("is") == 0 || option_index.indexOf("has") == 0}'
+						+'  <select name="${option_index}"><option value="true" {if option==true} selected="selected"{/if}>true</option><option value="false" {if option==false} selected="selected"{/if}>false</option></select>'
+						+'  {else}'
 						+'	<input name="${option_index}" value="${option}" type="text"/>'
+						+'  {/if}'
 						+'</div>'
 						+'{/for}';
 
@@ -42,7 +46,7 @@ export function initDevtoolsApp (_bridge) {
 	});
 	
 	$('body').on('click', '.inspect', function () {
-		chrome.devtools.inspectedWindow.eval('inspect(getElement("tab", ' + $(this).data('guid') + ')[0])');
+		chrome.devtools.inspectedWindow.eval('inspect(JDFUIDEBUGGERgetElement("tab", ' + $(this).data('guid') + ')[0])');
 	});
 
 	$('body').on('click', '.debug', function () {
@@ -68,7 +72,7 @@ function edit (instance) {
 
 function updateInstanceConfig () {
 	var newOptions = {};
-	$('#options-editor .options input').each(function () {
+	$('#options-editor .options').find('input, select').each(function () {
 		var name = $(this).attr('name');
 
 		if (name.match(/^(is|has)/)) {
