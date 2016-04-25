@@ -19,24 +19,36 @@ const OPTIONS_TEMPLATE = '{for option in options}'
 						+'</div>'
 						+'{/for}';
 
-const optionsCache = {};
+const COMPONMENTS_TEMPLATE =  '{for name in data}'
+							+ '<div class="componment">${name_index}</div>'
+							+ '{/for}';
+
+let componmentsCache;
 
 let bridge;
+
+let currentComponment = null;
 
 export function initDevtoolsApp (_bridge) {
 	bridge = _bridge;
 
 	bridge.on('info', function (payload) {
-		$('.ui-instance-list').html(UI_INSTANCE_TEMPLATE.process({list:payload}));
-		for (let instance of payload) {
-			optionsCache[instance.guid] = instance;
+		$('.componments-list').html(COMPONMENTS_TEMPLATE.process({data: payload}));
+		componmentsCache = {};
+
+		for (let name of Object.keys(payload)) {
+			componmentsCache[name] = {};
+
+			for (let i of payload[name]) {
+				componmentsCache[name][i.guid] = i;
+			}
 		}
 	});
 	
 	$('body').on('mouseenter', '.ui-instance', function () {
 		$(this).addClass('hover');
 		bridge.send('focus', {
-			type: 'tab',
+			type: currentComponment,
 			guid: $(this).data('guid')
 		});
 	});
@@ -50,7 +62,7 @@ export function initDevtoolsApp (_bridge) {
 	});
 
 	$('body').on('click', '.debug', function () {
-		edit(optionsCache[$(this).data('guid')]);
+		edit(componmentsCache[currentComponment][$(this).data('guid')]);
 	});
 }
 
@@ -85,8 +97,15 @@ function updateInstanceConfig () {
 	});
 
 	bridge.send('updateOptions', {
-		type: 'tab',
+		type: currentComponment,
 		guid: $('#options-editor').data('guid'),
 		newOptions: newOptions
 	})
 }
+
+// 切换组件
+$('.componments-list').on('click', '.componment', function () {
+	$(this).addClass('curr').siblings().removeClass('curr');
+	currentComponment = $(this).text();
+	$('.ui-instance-list').html(UI_INSTANCE_TEMPLATE.process({list: componmentsCache[currentComponment]}));
+})

@@ -52,11 +52,11 @@ h2.selector {
 #options-editor {
 	z-index: 20;
 	position: fixed;
-	width: 600px;
+	width: 900px;
 	height: 200px;
 	top: 50%;
 	left: 50%;
-	margin-left: -300px;
+	margin-left: -450px;
 	margin-top: -100px;
 	background: #EEE;
 	padding: 10px;
@@ -66,6 +66,11 @@ h2.selector {
 	position: absolute;
 	bottom: 10px;
 	right: 10px;
+}
+
+#options-editor .options {
+	height: 160px;
+	overflow-y: auto;
 }
 
 #options-editor .option {
@@ -86,4 +91,24 @@ h2.selector {
 
 .hide {
 	display: none;
+}
+
+.componments-list {
+	height: 25px;
+    padding: 10px;
+    border-bottom: 3px solid #EEE;
+    cursor: pointer;
+}
+
+.componments-list .componment {
+    display: inline-block;
+    width: 100px;
+    text-align: center;
+    border: 1px solid #EEE;
+    font-size: 15px;
+    margin-right: 10px;
+}
+
+.componments-list .curr {
+	background: #AAA;
 }

@@ -40,17 +40,34 @@ bridge.on('updateOptions', (data) => {
 
 // Helper
 function gatherComponments () {
-	var tabs = [];
+	const excludes = ['lazyload'];
+	const result = {}; 
+	const uiComponments = $.ui.all();
 
-	for (let tab of $.ui.all().tab) {
-		tabs.push({
-			guid: tab.guid,
-			options: cloneOptions(tab.cache('options')),
-			selector: tab.el.selector
-		})
+	for (let name of Object.keys(uiComponments)) {
+		if (excludes.indexOf(name) > -1 || uiComponments[name].length == 0) {
+			continue;
+		}
+		else {
+			if (uiComponments[name][0].options.baseVersion == '1.0.0') {
+				// 1.0组件
+				continue;
+			}
+
+			result[name] = [];
+		
+			for (let instance of uiComponments[name]) {
+				result[name].push({
+					guid: instance.guid,
+					options: cloneOptions(instance.cache('options')),
+					selector: instance.el.selector
+				})
+			}
+		}
 	}
 
-	return tabs;
+
+	return result;
 }
 
 function cloneOptions (options) {
